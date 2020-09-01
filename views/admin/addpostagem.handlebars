@@ -1,0 +1,24 @@
+<div class="card">
+    <div class="card-body">
+        <h4>Nova Postagem:</h4>
+        <form action="/admin/postagensadd" method="POST">
+            <label for="titulo">Título:</label>
+            <input autocomplete="off" type="text" name="titulo" class="form-control" required>
+            <label for="slug">Slug:</label>
+            <input autocomplete="off" type="text" name="slug" class="form-control" autocomplete="false" required>
+            <label for="descricao">Descrição:</label>
+            <input autocomplete="off" type="text" name="descricao" class="form-control" required>
+            <label for="conteudo">Conteudo:</label>
+            <textarea autocomplete="off" name="conteudo" class="form-control"></textarea>
+            <label for="categoria">Categoria:</label>
+            <select autocomplete="off" class="custom-select" name="categoria" id="categoria">
+                {{#each categorias}}
+                    <option value="{{_id}}">{{nome}}</option>
+                {{else}}
+                    <option value="0">Nenhuma categoria registrada</option>
+                {{/each}}
+            </select>
+            <button type="submit" class="btn btn-primary mt-4">Criar postagem</button>
+        </form>
+    </div>
+</div>
