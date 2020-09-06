@@ -187,5 +187,37 @@ router.get('/postagem/remove/:id', (req,res) => {
       res.redirect('/admin/postagem')
     })
 })
+
+router.get('/postagem/editar/:id',(req,res) => {
+    Postagem.findOne({_id:req.params.id}).lean().then((postagem) => {
+        res.render('admin/editcategorias',{postagen: postagem})
+      
+    }).catch( (err) => {
+      req.flash("error_msg", "essa postagem não existe")
+      res.redirect('/admi/postagens')
+    })
+})
+
+router.post('/postagem/editar', (req,res) => {
+    const erros=[]
+
+    
+         Categoria.findOne({_id: req.body.id}).then( (categoria) => {
+            categoria.nome = req.body.nome
+            categoria.slug = req.body.slug
+            categoria.save().then(() => {
+              req.flash("success_msg", "Categoria editada com succeso")
+              res.redirect('/admin/postagens')
+            }).catch((err) => {
+              req.flash("error_msg", "Houve um erro interno ao salvar a categoria")
+              res.redirect('/admin/postagens')
+
+            })
+        }).catch((err) => {
+          req.flash("error_msg","houve um erro")
+        })
+    }
+)
+
 module.exports = router
 
