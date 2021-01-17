@@ -18,10 +18,13 @@ const Postagem = new Schema({
         type:String,
         required: true
     },
-    categoria:{
-        type: Schema.Types.ObjectId,
-        ref: "categorias",
-        required:true
+    likes:{
+        type:Number,
+        default:0
+    },
+    deslikes:{
+        type:Number,
+        default:0
     },
     datapublicada:{
         type:Date,

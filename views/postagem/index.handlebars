@@ -1,0 +1,111 @@
+<div class="card" >  
+    <div class="card-body"> 
+        <h1 class=" card-title">{{postagem.titulo}}</h1>
+        <hr>
+        <div class="d-inline text-center mt-4 mb-5">
+             <h4 class=" d-inline">{{postagem.descricao}}</h4>
+             <small >Publicado em:{{#formatDate postagem.datapublicada}} {{postagem.datapublicada}} {{/formatDate}}</small>
+        </div>
+            <br>
+            <hr>
+            {{{postagem.conteudo}}}
+           
+    </div>
+    <div class="card-footer">
+        <i 
+         id="like"
+         onclick=like("{{postagem._id}}")  
+         class="far fa-thumbs-up"
+        ></i>
+        <i 
+         id="liked"
+         onclick=like("{{postagem._id}}") 
+         style="display: none;" 
+         class="fas fa-thumbs-up"></i>
+        <small id="likes" class="mr-5">{{postagem.likes}}</small>
+        <i 
+         id="deslike"
+         onclick=deslike("{{postagem._id}}") 
+         class="far fa-thumbs-down"></i>
+        <i 
+         id="desliked"
+         onclick=deslike("{{postagem._id}}") 
+         style="display: none;" 
+         class="fas fa-thumbs-down"></i>
+         <small id="deslikes">{{postagem.deslikes}}</small>
+        
+    </div>
+</div>
+<script>
+    const likes = document.getElementById('likes')
+    const deslikes = document.getElementById('deslikes')
+    let liked = false
+    let desliked = false
+    const config = {
+        method: "POST"
+    }
+    function like(id){
+        
+        if(!desliked){
+            if(liked === false){
+                if(self.fetch) {
+                    fetch(`/postagem/like/${id}`, config).then(_=>console.log('succes')).catch(err=>console.log('error'))
+                    document.getElementById('like').style.display = 'none'
+                    document.getElementById('liked').style.display = 'inline'
+                    likes.innerHTML = Number.parseInt(likes.innerHTML) +1
+                } else {
+                    console.log("navegador nao compativel")
+                }
+            }else{
+                fetch(`/postagem/unlike/${id}`, config).then(_=>console.log('succes')).catch(err=>console.log('error'))
+                    document.getElementById('like').style.display = 'inline'
+                    document.getElementById('liked').style.display = 'none'
+                    likes.innerHTML = Number.parseInt(likes.innerHTML) -1
+
+            }
+            liked = !liked
+        }else{
+            fetch(`/postagem/undeslike/${id}`, config).then(_=>console.log('succes')).catch(err=>console.log('error'))
+                document.getElementById('deslike').style.display = 'inline'
+                document.getElementById('desliked').style.display = 'none'
+                deslikes.innerHTML = Number.parseInt(deslikes.innerHTML) -1
+                    
+           desliked=!desliked
+           like(id)
+             
+        }
+    }
+
+    function deslike(id){
+        if(!liked){
+            if(desliked === false){
+                if(self.fetch) {
+                    fetch(`/postagem/deslike/${id}`, config).then(_=>console.log('succes')).catch(err=>console.log('error'))
+                    document.getElementById('deslike').style.display = 'none'
+                    document.getElementById('desliked').style.display = 'inline'
+                    deslikes.innerHTML = Number.parseInt(deslikes.innerHTML) +1
+                } else {
+                    console.log("navegador nao suportado")
+                }
+            }else{
+                fetch(`/postagem/undeslike/${id}`, config).then(_=>console.log('succes')).catch(err=>console.log('error'))
+                document.getElementById('deslike').style.display = 'inline'
+                document.getElementById('desliked').style.display = 'none'
+                deslikes.innerHTML = Number.parseInt(deslikes.innerHTML) -1
+                    
+            }
+            desliked = !desliked
+        }else{
+            fetch(`/postagem/unlike/${id}`, config).then(_=>console.log('succes')).catch(err=>console.log('error'))
+                    document.getElementById('like').style.display = 'inline'
+                    document.getElementById('liked').style.display = 'none'
+                    likes.innerHTML = Number.parseInt(likes.innerHTML) -1
+        liked=!liked
+        deslike(id)
+        }
+        
+        
+    }
+    
+
+</script>

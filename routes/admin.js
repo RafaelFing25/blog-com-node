@@ -1,141 +1,22 @@
 const express = require('express');
 const router = express.Router();
-const mongoose = require('mongoose');
-require('../modules/Categoria')
-const Categoria = mongoose.model("categorias")
+const mongoose = require('mongoose')
 require('../modules/Postagem')
 const Postagem = mongoose.model("postagens")
+const { eAdmin } = require("../helpers/eAdmin")
 
 
-router.get('/',(req,res) => {
+router.get('/',eAdmin,(req,res) => {
     res.render('admin/index')
 })
 
-router.get('/posts', (req,res) => {
+router.get('/posts', eAdmin,(req,res) => {
     res.send('Pagina de posts ')
 })
 
-router.get('/categorias', (req,res) => {
-    Categoria.find().sort({date:'desc'}).lean().then((categorias) => {
-        res.render('admin/categorias', {categorias: categorias/*.map(categorias =>{categorias.toJSON()})*/})
 
-    }).catch((err) => {
-        req.flash('error_msg', "houve um erro"+err)
-        res.redirect('/admin')
-    })
-})
-
-router.get('/categorias/add', (req,res) => {
-    res.render('admin/addcategorias')
-})
-router.post("/categorias/nova", (req,res) => {
-
-    const erros= []
-
-    if(!req.body.nome || typeof req.body.nome == undefined  /*req.body.name == null*/){
-        erros.push({text: "Nome Invalido"})
-    }
-
-    if(!req.body.slug|| typeof req.body.slug == undefined || req.body.slug == null){
-        erros.push({text: "Slug Inválido"})
-    }
-
-    if(req.body.nome.length < 5){
-        erros.push({text: "O nome deve ter mais de 5 caracteres"})
-    }
-
-
-    
-
-    if(req.body.slug.length < 5){
-        erros.push({text: "O slug deve ter mais de 5 caracteres"})
-    }
-    if(erros.length > 0){
-        res.render("admin/addcategorias", {erros: erros})
-    }else{const novaCategoria = {
-        nome: req.body.nome,
-        slug: req.body.slug
-    }
-
-    new Categoria(novaCategoria).save().then(() => {
-        console.log('Salvo com sucesso')
-        req.flash("success_msg", "Categoria Criada com sucesso")
-        res.redirect("/admin/categorias")})
-        .catch((err) => {
-            req.flash("error_msg", "Ouve um erro ao salvar a categoria")
-            console.log(err)
-            res.redirect('/admin')})}
-
-    
-})
-router.get("/categorias/delete/:id", (req,res) =>{
-    Categoria.findOneAndRemove({_id: req.params.id}).then(() => {
-        req.flash("success_msg","Categoria deletada com sucesso!")
-        res.redirect('/admin/categorias')
-    }).catch((err) => {
-      req.flash("error_msg", "Occreu u erro intern ao deletar a categoria!")
-      res.redirect('/admin/categorias')
-    })
-})
-
-router.get('/categorias/editar/:id',(req,res) => {
-    Categoria.findOne({_id:req.params.id}).lean().then((categoria) => {
-        res.render('admin/editcategorias',{categoria: categoria})
-      
-    }).catch( (err) => {
-      req.flash("error_msg", "essa categoria não existe")
-      res.redirect('/admi/categorias')
-    })
-})
-
-router.post('/categorias/editar', (req,res) => {
-    const erros=[]
-
-    if(!req.body.nome || typeof req.body.nome == undefined  /*req.body.name == null*/){
-        erros.push("Nome Invalido")
-    }
-
-    if(!req.body.slug|| typeof req.body.slug == undefined || req.body.slug == null){
-        erros.push("Slug Inválido")
-    }
-
-    if(req.body.nome.length < 5){
-        erros.push("O nome deve ter mais de 5 caracteres")
-    }
-    
-
-
-    
-
-    if(req.body.slug.length < 5){
-        erros.push("O slug deve ter mais de 5 caracteres")
-    }
-    if(erros.length > 0){
-        req.flash("error_msg",erros.toString())
-        console.log(erros.toString())
-        res.redirect('/admin/categorias/editar/'+req.body.id)
-        
-    }else{
-         Categoria.findOne({_id: req.body.id}).then( (categoria) => {
-            categoria.nome = req.body.nome
-            categoria.slug = req.body.slug
-            categoria.save().then(() => {
-              req.flash("success_msg", "Categoria editada com succeso")
-              res.redirect('/admin/categorias')
-            }).catch((err) => {
-              req.flash("error_msg", "Houve um erro interno ao salvar a categoria")
-              res.redirect('/admin/categorias')
-
-            })
-        }).catch((err) => {
-          req.flash("error_msg","houve um erro")
-        })
-    }
-})
-
-router.get('/postagens', (req,res) => {
+router.get('/postagens',eAdmin, (req,res) => {
     Postagem.find().lean().populate('categoria').sort({datapublicada:"desc"}).then((postagens)=>{
-        console.log(postagens)
         res.render("admin/postagens",{postagens:postagens})
     }).catch(err=>{
         req.flash("error_msg", "Erro Interno!Tente novamente.")
@@ -143,30 +24,23 @@ router.get('/postagens', (req,res) => {
     })
 })
 
-router.get("/postagens/add", (req,res) => {
-    Categoria.find().lean().then(categorias=>{
-        console.log(categorias)
-        res.render("admin/addpostagem",{categorias:categorias})
-    }).catch((err) => {
-      req.flesh("error_msg", "Houve um erro desconhecido")
-    })
+router.get("/postagens/add",eAdmin, (req,res) => {
+    
+    res.render("admin/addpostagem")
+    
     
 })
-router.post('/postagensadd',(req,res) => {
+router.post('/postagensadd',eAdmin,(req,res) => {
   const erros = []
 
-  if(req.body.categoria == "0"){
-      erros.push('Categoria invalida registre uma categoria')
-  }
   if(erros.length>0){
     req.flash("error_msg", erros.toString())
   }else{
   const novaPostagem = {
       titulo: req.body.titulo,
       slug: req.body.slug,
-      decriçao: req.body.descricao,
+      descricao: req.body.descricao,
       conteudo: req.body.conteudo,
-      categoria: req.body.categoria
   }
   new Postagem(novaPostagem).save().then(() => {
     req.flash("success_msg","Postagem Criada com sucesso")
@@ -178,7 +52,7 @@ router.post('/postagensadd',(req,res) => {
   }
 })
 
-router.get('/postagem/remove/:id', (req,res) => {
+router.get('/postagem/remove/:id', eAdmin,(req,res) => {
     Postagem.findOneAndRemove({_id: req.params.id}).then(() => {
         req.flash("success_msg","Categoria deletada com sucesso!")
         res.redirect('/admin/postagens')
@@ -188,36 +62,39 @@ router.get('/postagem/remove/:id', (req,res) => {
     })
 })
 
-router.get('/postagem/editar/:id',(req,res) => {
-    Postagem.findOne({_id:req.params.id}).lean().then((postagem) => {
-        res.render('admin/editcategorias',{postagen: postagem})
+router.get('/postagem/editar/:id',eAdmin,(req,res) => {
+    Postagem.findOne({_id:req.params.id}).lean().then((postagem) => {   
       
+      res.render('admin/editpostagem',{postagem: postagem})
     }).catch( (err) => {
-      req.flash("error_msg", "essa postagem não existe")
-      res.redirect('/admi/postagens')
+        console.log(err)
+      req.flash("error_msg", "Erro ao caregar formulario! Tente novamente!")
+      res.redirect('/admin/postagens')
     })
 })
 
-router.post('/postagem/editar', (req,res) => {
+router.post('/postagem/editar',eAdmin, (req,res) => {
     const erros=[]
+  Postagem.findOne({_id: req.body.id}).then(postagem=>{
 
-    
-         Categoria.findOne({_id: req.body.id}).then( (categoria) => {
-            categoria.nome = req.body.nome
-            categoria.slug = req.body.slug
-            categoria.save().then(() => {
-              req.flash("success_msg", "Categoria editada com succeso")
-              res.redirect('/admin/postagens')
-            }).catch((err) => {
-              req.flash("error_msg", "Houve um erro interno ao salvar a categoria")
-              res.redirect('/admin/postagens')
+    postagem.titulo = req.body.titulo
+    postagem.slug = req.body.slug
+    postagem.descricao = req.body.descricao
+    postagem.conteudo = req.body.conteudo
 
-            })
-        }).catch((err) => {
-          req.flash("error_msg","houve um erro")
-        })
-    }
-)
+    postagem.save().then(_=>{
+      req.flash('success_msg',"Postagem salva com sucesso")
+      res.redirect('/admin/postagens')
+    }).catch(err=>{
+      req.flash('error_msg', "houve um erro ao salvar a Postagem")
+      res.redirect('/admin/postagens')
+    })
+
+  }).catch(err=>{
+    req.flash('error_msg',"Houve um erro ao salvar a Postagem")
+    res.redirect("/admin/postagens")
+  })
+})
 
 module.exports = router
 

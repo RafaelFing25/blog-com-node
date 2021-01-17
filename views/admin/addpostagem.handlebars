@@ -10,14 +10,6 @@
             <input autocomplete="off" type="text" name="descricao" class="form-control" required>
             <label for="conteudo">Conteudo:</label>
             <textarea autocomplete="off" name="conteudo" class="form-control"></textarea>
-            <label for="categoria">Categoria:</label>
-            <select autocomplete="off" class="custom-select" name="categoria" id="categoria">
-                {{#each categorias}}
-                    <option value="{{_id}}">{{nome}}</option>
-                {{else}}
-                    <option value="0">Nenhuma categoria registrada</option>
-                {{/each}}
-            </select>
             <button type="submit" class="btn btn-primary mt-4">Criar postagem</button>
         </form>
     </div>

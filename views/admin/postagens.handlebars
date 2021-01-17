@@ -9,7 +9,7 @@
         window.location.href = '/admin/postagem/remove/'+id
     }
     function redirecttoedit(id){
-        console.log(id)
+        window.location.href = '/admin/postagem/editar/'+id
     }
 </script>
 {{#each postagens}}
@@ -17,7 +17,8 @@
 <div class="card mt-4">
     <div class="card-body">
         <h4>Titulo: {{titulo}}</h4>
-        <p style="display:block"> Categoria:{{categoria.nome}}</p>
+        <p>Conteudo: {{conteudo}}</p>
+        <p>Desc: {{descricao}}</p>
         <small style="display:block"> Data da publicação:{{#formatDate datapublicada}} {{datapublicada}} {{/formatDate}}</small>
         <small style="display:block">Slug:{{slug}}</small>
         <button onclick="redirecttoremove('{{_id}}')" class="btn btn-primary">
