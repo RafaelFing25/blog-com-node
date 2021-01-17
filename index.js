@@ -87,7 +87,7 @@ require('./config/auth')(passport)
     })
 
 //! Outros
-const PORTA = 8081
+const PORTA = process.env.PORT || 8081
 app.listen(PORTA, () => {
     console.log(`Servidor rodando em https://localhost:${PORTA} !`)
 })
