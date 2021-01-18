@@ -47,7 +47,7 @@ require('./config/auth')(passport)
             defaultLayout: 'main',
             helpers: {
                 formatDate: (date) => {
-                    return moment(date).format('DD/MM/YYYY as hh:mm')
+                    return moment(date).format('DD/MM/YYYY  hh:mm')
                 }
             }
              }))
