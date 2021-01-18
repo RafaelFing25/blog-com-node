@@ -90,7 +90,8 @@ router.post('/postagem/editar',eAdmin, (req,res) => {
     if(req.body.data === undefined){
       req.body.data = Data.toISOString()
     }else if(req.body.hora){
-      req.body.data =`${req.body.data}  ${req.body.hora}`
+      const [hora, minutos] = req.body.hora.split(':')
+      req.body.data =`${req.body.data}  ${hora+3}:${minutos}`
     }else{
       req.body.data = `${req.body.data}  ${Data.getHours()}:${Data.getSeconds()}`
     }
