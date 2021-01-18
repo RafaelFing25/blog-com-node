@@ -47,7 +47,7 @@ require('./config/auth')(passport)
             defaultLayout: 'main',
             helpers: {
                 formatDate: (date) => {
-                    return moment(date).format('DD/MM/YYYY')
+                    return moment(date).format('DD/MM/YYYY as hh:mm')
                 }
             }
              }))
@@ -71,10 +71,12 @@ require('./config/auth')(passport)
     app.use("/postagem", postagens)
     app.use('/usuarios', usuario)
     app.get('/' , (req,res)=>{
-        Postagem.find().lean().sort({datapublicada:"desc"}).limit(5).then(postagens=>{
+        const Data = new Date()
+        
+        Postagem.find().where('datapublicada').lt(Data.toISOString()).lean().sort({datapublicada:"desc"}).limit(5).then(postagens=>{
             res.render("index", {postagens:postagens})
         }).catch((err)=>{
-            req.flash("error_msg", "Houve um erro interno")
+            req.flash("error_msg", err)
             res.redirect('/404')
         })
     })

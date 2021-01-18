@@ -32,20 +32,31 @@ router.get("/postagens/add",eAdmin, (req,res) => {
 })
 router.post('/postagensadd',eAdmin,(req,res) => {
   const erros = []
-
+  const Data = new Date()
+  
   if(erros.length>0){
     req.flash("error_msg", erros.toString())
   }else{
+    if(req.body.data === undefined){
+      req.body.data = Data.toISOString()
+    }else if(req.body.hora){
+      req.body.data =`${req.body.data}  ${req.body.hora}`
+    }else{
+      req.body.data = `${req.body.data}  ${Data.getHours()}:${Data.getSeconds()}`
+    }
+    
   const novaPostagem = {
       titulo: req.body.titulo,
       slug: req.body.slug,
       descricao: req.body.descricao,
       conteudo: req.body.conteudo,
+      datapublicada: req.body.data
   }
   new Postagem(novaPostagem).save().then(() => {
     req.flash("success_msg","Postagem Criada com sucesso")
     res.redirect('/admin/postagens')
   }).catch((err) => {
+    console.log(err)
     req.flash("error_msg" , "erro desconhecido, tente novamente")
     res.redirect('/admin/postagens')
   })
@@ -76,11 +87,19 @@ router.get('/postagem/editar/:id',eAdmin,(req,res) => {
 router.post('/postagem/editar',eAdmin, (req,res) => {
     const erros=[]
   Postagem.findOne({_id: req.body.id}).then(postagem=>{
+    if(req.body.data === undefined){
+      req.body.data = Data.toISOString()
+    }else if(req.body.hora){
+      req.body.data =`${req.body.data}  ${req.body.hora}`
+    }else{
+      req.body.data = `${req.body.data}  ${Data.getHours()}:${Data.getSeconds()}`
+    }
 
     postagem.titulo = req.body.titulo
     postagem.slug = req.body.slug
     postagem.descricao = req.body.descricao
     postagem.conteudo = req.body.conteudo
+    postagem.datapublicada = req.body.data
 
     postagem.save().then(_=>{
       req.flash('success_msg',"Postagem salva com sucesso")

@@ -18,10 +18,33 @@
                     <input autocomplete="off" type="text" value="{{postagem.descricao}}" name="descricao" class="form-control" required>
                     <label for="conteudo">Conteudo:</label>
                     <textarea autocomplete="off"  name="conteudo" class="form-control"> {{postagem.conteudo}}</textarea>
+                    <input type="checkbox" class=" mt-2" name="checkbox" id="checkbox" onclick="agendar()"><label for="checkbox">Agendar Postagem</label>
+                    <input type="date" name="data"  id="dateinput">
+                    <input type="datetime" name="hora" id="horas">
                     <button type="submit" class="btn btn-primary mt-4">Salvar</button>
                 </form>
             </div>
         </div>
     </div>
+
+    <script>
+    const checkbox = document.getElementById('checkbox')
+    const dateinput = document.getElementById('dateinput')
+    const horas = document.getElementById('horas')
+    horas.style.display = 'none'
+            dateinput.style.display = 'none'
+
+    function agendar(){
+        if(checkbox.checked){
+             horas.style.display = 'block'
+            dateinput.style.display = 'block'
+        }else{
+             dateinput.style.display = 'none'
+            horas.style.display = 'none'
+
+
+        }
+    }
+</script>
    
 
